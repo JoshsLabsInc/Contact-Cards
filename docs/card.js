@@ -43,7 +43,7 @@ export function parseCard(bytes) {
     else lines.push(line);
   }
   if(lines[0]?.toUpperCase()!=='BEGIN:VCARD'||lines.at(-1)?.toUpperCase()!=='END:VCARD'||lines.filter(l=>l.toUpperCase()==='BEGIN:VCARD').length!==1) throw Error('Choose a .vcf containing one contact.');
-  let formatted='',fallback='',photo='',title='',company='';
+  let formatted='',fallback='',photo='',title='',company='',theme='light';
   const rows=[];
   for(const line of lines){
     const at=line.indexOf(':'); if(at<0)continue;
@@ -51,6 +51,7 @@ export function parseCard(bytes) {
     let value=line.slice(at+1);
     if(/ENCODING=QUOTED-PRINTABLE/i.test(head))value=decodeQuoted(value,head.match(/CHARSET="?([^;"]+)/i)?.[1]);
     const val=unescapeText(value).trim(); if(!val)continue;
+    if(prop==='X-FOLIO-THEME'&&val==='dark')theme='dark';
     if(prop==='FN')formatted=val;
     if(prop==='N'){const chunks=value.split(/(?<!\\);/).map(unescapeText);fallback=[chunks[3],chunks[1],chunks[2],chunks[0],chunks[4]].filter(Boolean).join(' ');}
     if(prop==='ORG')company=parts(value).join(' · ');
@@ -69,5 +70,5 @@ export function parseCard(bytes) {
   if(!name)throw Error('This file needs a contact name or organization.');
   if(company) rows.push({label:'Company',text:company});
   if(title) rows.push({label:'Job title',text:title});
-  return {name,photo,title,company,rows};
+  return {name,photo,title,company,theme,rows};
 }

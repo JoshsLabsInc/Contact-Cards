@@ -36,7 +36,7 @@ const server=http.createServer(async(req,res)=>{
     for await (const chunk of req){size+=chunk.length;if(size>2097152+28)return end(413);chunks.push(chunk);}
     if(size<=28)return end(400);
     const token=await gitLogin();
-    const result=await fetch('https://api.github.com/repos/'+repo+'/contents/cards/'+match[1]+'.vcf.enc',{method:'PUT',headers:{Authorization:'Bearer '+token,'User-Agent':'Folio-publisher','Content-Type':'application/json'},body:JSON.stringify({message:'Publish encrypted contact',content:Buffer.concat(chunks).toString('base64'),branch:'main'})});
+    const result=await fetch('https://api.github.com/repos/'+repo+'/contents/vcf/'+match[1]+'.vcf.enc',{method:'PUT',headers:{Authorization:'Bearer '+token,'User-Agent':'Folio-publisher','Content-Type':'application/json'},body:JSON.stringify({message:'Publish encrypted contact',content:Buffer.concat(chunks).toString('base64'),branch:'main'})});
     return end(result.status);
   }catch{return end(503);}
 });
@@ -46,4 +46,5 @@ server.listen(Number(process.env.FOLIO_PORT||0),'127.0.0.1',()=>{
   console.log('Folio studio: '+url);
   if(process.argv.includes('--open')&&process.platform==='win32')execFile('rundll32.exe',['url.dll,FileProtocolHandler',url],{windowsHide:true});
 });
+
 
