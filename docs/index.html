@@ -12,16 +12,17 @@
 <section id="studio">
 <div class="intro"><div><h1>Contact studio<span>.</span></h1><p>Turn a contact file into a card you can share.</p></div></div>
 <div class="workspace">
-<section class="panel import"><div class="kicker">CARD IMPORT</div><h2>Import a contact</h2><p class="explain">Choose a vCard to create its read-only page and QR code.</p>
+<section class="panel import"><h2>Import a contact</h2><p class="explain">Choose a vCard to create its read-only page and QR code.</p>
 <label class="drop" id="zone"><span class="filemark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7z M19 4v6h6"/><circle cx="15" cy="15" r="2.6"/><path d="M10 23c.7-4.4 8.4-4.4 10 0"/></svg></span><strong id="fileLabel">Choose a .vcf file</strong><span>or drop it here · up to 2 MB</span><input type="file" accept=".vcf,.vcard,text/vcard,text/x-vcard" id="vcf"></label>
 <button class="primary" id="publish" disabled>Create share link <b aria-hidden="true">↗</b></button>
 <p class="note"><span class="lock" aria-hidden="true">◇</span> Only people with the full link can open the card.</p><p role="status" id="notice"></p>
 </section>
-<section class="stage" aria-label="Contact preview"><div class="stagebar"><span class="signal"></span><span id="previewLabel">SAMPLE PREVIEW</span></div><div class="folio-card" id="preview"></div><div class="stagefoot"><span>FOLIO</span><span>CONTACT CARD</span></div></section>
+<section class="stage" aria-label="Contact preview"><div class="stagebar"><span class="signal"></span><span id="previewLabel">SAMPLE PREVIEW</span></div><div class="folio-card" id="preview"></div><div class="stagefoot"><a id="sampleLink" href="https://joshslabsinc.github.io/Contact-Cards/#c=ba3bc85920c24c96bde3be020fbd01fc.DY3DxA5rHI17Nufme_jAQ-S-KoK2UHrfozdk-YPiVcA" target="_blank" rel="noopener">Open sample card ↗</a><button id="inspect" hidden>Review contact fields</button></div></section>
 </div>
 <section id="share" class="panel share" hidden><canvas id="qr" aria-label="QR code for the contact link"></canvas><div><div class="kicker">READY TO SHARE</div><h2>Your card is live.</h2><p>Send the link or let someone scan the code.</p><div class="actions"><button id="copy" class="primary">Copy link</button><a id="qrSave" class="sub" download="folio-qr.png">Download QR</a><a class="sub" id="openCard" target="_blank" rel="noopener">Open card ↗</a></div><input id="shareUrl" readonly aria-label="Share link"></div></section>
 </section>
 <section id="reader" hidden><div id="viewer"></div></section>
 </main>
-<dialog id="connect"><form method="dialog"><button class="close" aria-label="Close">×</button></form><div class="kicker">PUBLISHER ACCESS</div><h2>Connect to GitHub</h2><p>Publishing requires write access to JoshsLabsInc/Contact-Cards. Paste a fine-grained token scoped to that repository with Contents read and write access.</p><label for="token">Repository token</label><input type="password" autocomplete="off" spellcheck="false" id="token"><p class="fine">Kept in memory for this tab and sent only to GitHub. Recipients open their link without signing in.</p><button class="primary" id="authorize">Publish card <b aria-hidden="true">↗</b></button></dialog>
+<dialog id="inspection"><form method="dialog"><button class="close" aria-label="Close">×</button></form><h2>Contact details</h2><div id="fields"></div></dialog><dialog id="connect"><form method="dialog"><button class="close" aria-label="Close">×</button></form><div class="kicker">PUBLISHER ACCESS</div><h2>Connect to GitHub</h2><p>Publishing requires write access to JoshsLabsInc/Contact-Cards. Paste a fine-grained token scoped to that repository with Contents read and write access.</p><label for="token">Repository token</label><input type="password" autocomplete="off" spellcheck="false" id="token"><p class="fine">Kept in memory for this tab and sent only to GitHub. Recipients open their link without signing in.</p><button class="primary" id="authorize">Publish card <b aria-hidden="true">↗</b></button></dialog>
 <script src="./qr.js" defer></script><script type="module" src="./studio.js"></script></body></html>
+

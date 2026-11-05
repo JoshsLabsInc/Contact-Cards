@@ -9,12 +9,13 @@ function message(text){$('notice').textContent=text;}
 async function select(file){
   if(busy)return;
   const own=++revision; selected=prepared=null;$('publish').disabled=true;$('share').hidden=true;message('');preview(sample);$('fileLabel').textContent='Choose a .vcf file';$('previewLabel').textContent='SAMPLE PREVIEW';
+  inspect.hidden=true;sampleLink.hidden=false;
   if(!file)return;
   try{
     if(file.size>MAX_FILE||!file.size)throw Error('Choose a non-empty file under 2 MB.');
     const bytes=new Uint8Array(await file.arrayBuffer()); const card=parseCard(bytes);
     if(own!==revision)return;
-    selected={bytes,card};preview(card);$('previewLabel').textContent='YOUR CARD PREVIEW';$('fileLabel').textContent=file.name;$('publish').disabled=false;
+    selected={bytes,card};preview(card);inspect.hidden=false;sampleLink.hidden=true;$('previewLabel').textContent='YOUR CARD PREVIEW';$('fileLabel').textContent=file.name;$('publish').disabled=false;
   }catch(e){if(own===revision)message(e.message);}
 }
 function drawQR(url){
@@ -52,10 +53,15 @@ async function fetchPacked(id){
   if(!response.ok)throw Error('This card could not be loaded. Check the link or try again shortly.');
   const bytes=new Uint8Array(await response.arrayBuffer());if(bytes.length>MAX_FILE+28)throw Error('Invalid card file.');return bytes;
 }
+function contactRows(card){
+  const details=document.createDocumentFragment();
+  for(const row of card.rows){const line=node('div','row');const field=node(row.href?'a':'span','',row.text);if(row.href){field.href=row.href;if(row.label==='Website'){field.target='_blank';field.rel='noopener noreferrer';}}line.append(node('small','',row.label),field);details.append(line);}
+  return details;
+}
 function profile(card,bytes){
   const wrap=node('article','viewer'),cover=node('div','cover'),details=node('div','details');
   cover.append(avatar(card),node('h1','readername',card.name),node('div','cardrole',[card.title,card.company].filter(Boolean).join(' · ')));
-  for(const row of card.rows){const line=node('div','row');const field=node(row.href?'a':'span','',row.text);if(row.href){field.href=row.href;if(row.label==='Website'){field.target='_blank';field.rel='noopener noreferrer';}}line.append(node('small','',row.label),field);details.append(line);}
+  details.append(contactRows(card));
   const save=node('a','save','Save to Contacts');download=URL.createObjectURL(new Blob([bytes],{type:'text/vcard'}));save.href=download;save.download=(card.name.replace(/[^\p{L}\p{N} ._-]/gu,'').slice(0,80)||'contact')+'.vcf';details.append(save);wrap.append(cover,details);return wrap;
 }
 let navigation=0;
@@ -64,7 +70,8 @@ async function route(){
   if(download){URL.revokeObjectURL(download);download='';}
   const hash=location.hash.slice(1),reader=!!hash;
   $('studio').hidden=reader;$('reader').hidden=!reader;document.title=reader?'Contact card · Folio':'Folio — Contact studio';
-  if(!reader)return;
+  if(!reader){document.querySelector('.navtag').textContent='Contact studio';return;}
+  document.querySelector('.navtag').textContent='Contact card';
   const status=node('div','panel','Opening contact…');$('viewer').replaceChildren(status);
   try{
     const match=/^c=([a-f0-9]{32})\.([a-zA-Z0-9_-]{43})$/.exec(hash);if(!match)throw Error('This link is incomplete. Ask the sender for the full card link.');
@@ -80,4 +87,6 @@ $('authorize').onclick=()=>{const token=$('token').value.trim();if(!token){$('to
 $('connect').addEventListener('close',()=>{$('token').value='';});
 $('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('shareUrl').value);$('copy').textContent='Copied ✓';setTimeout(()=>{$('copy').textContent='Copy link';},1600);}catch{$('shareUrl').select();message('Copy the selected share link.');}};
 if(location.hostname==='127.0.0.1'){try{const r=await fetch('./_session',{cache:'no-store'});if(r.ok)localSession=(await r.json()).session||'';}catch{}}
+$('inspect').onclick=()=>{if(!selected)return;$('fields').replaceChildren(node('h3','',selected.card.name),contactRows(selected.card));$('inspection').showModal();};
 preview(sample);addEventListener('hashchange',route);route();
+
