@@ -9,13 +9,13 @@ function message(text){$('notice').textContent=text;}
 async function select(file){
   if(busy)return;
   const own=++revision; selected=prepared=null;$('publish').disabled=true;$('share').hidden=true;message('');preview(sample);$('fileLabel').textContent='Choose a .vcf file';$('previewLabel').textContent='SAMPLE PREVIEW';
-  inspect.hidden=true;sampleLink.hidden=false;
+  $('inspect').hidden=true;$('sampleLink').hidden=false;
   if(!file)return;
   try{
     if(file.size>MAX_FILE||!file.size)throw Error('Choose a non-empty file under 2 MB.');
     const bytes=new Uint8Array(await file.arrayBuffer()); const card=parseCard(bytes);
     if(own!==revision)return;
-    selected={bytes,card};preview(card);inspect.hidden=false;sampleLink.hidden=true;$('previewLabel').textContent='YOUR CARD PREVIEW';$('fileLabel').textContent=file.name;$('publish').disabled=false;
+    selected={bytes,card};preview(card);$('inspect').hidden=false;$('sampleLink').hidden=true;$('previewLabel').textContent='YOUR CARD PREVIEW';$('fileLabel').textContent=file.name;$('publish').disabled=false;
   }catch(e){if(own===revision)message(e.message);}
 }
 function drawQR(url){
@@ -89,4 +89,5 @@ $('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('shareUrl'
 if(location.hostname==='127.0.0.1'){try{const r=await fetch('./_session',{cache:'no-store'});if(r.ok)localSession=(await r.json()).session||'';}catch{}}
 $('inspect').onclick=()=>{if(!selected)return;$('fields').replaceChildren(node('h3','',selected.card.name),contactRows(selected.card));$('inspection').showModal();};
 preview(sample);addEventListener('hashchange',route);route();
+
 
